@@ -12,12 +12,18 @@ var result = [];
 var moreInfo = {};
 //Reports object - Hold all Coins that toggled.
 var reports = {};
+
+var reportsToDelete={};
 //infoStorage Array -> Hold the more info for coin . 
 var infoStorage = [];
 
 var coinsHtml = "";
 
-let toggleCounter=0;
+let toggleCounter = 0;
+
+let sixthCoin="";
+
+letsixthCoinID="";
 
 
 /**Url's */
@@ -39,8 +45,8 @@ function getCoinsFromAPI(url) {
             coins = data;
             showAllCoins(coins);
             createToggleCounter();
-            
-            
+
+
         },
         error: function (error) {
             console.log("error : ", error);
@@ -49,25 +55,55 @@ function getCoinsFromAPI(url) {
 
 }
 
-let openToggleExceptionModal=()=>{
-    alert("too much");
+let addCoinsToModal = () => {
+    let coinsIDArray = Object.keys(reports);
+    coinsListHTML = "";
+    coinsIDArray.map((coindID) => {
+        coinsListHTML += `
+        <div>${coindID}
+            <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input coinsModal" id="${coindID}2" name="${coindID}" checked>
+            <label class="custom-control-label" for="${coindID}2"  >Toggle this switch element</label>
+            </div>
+        </div>`
+    });
+
+    $('.modal-body').html(coinsListHTML);
+    //add on toggle click event
+    $(".coinsModal").click(function () {
+        if ($(this).is(':checked')) {
+            delete  reportsToDelete[$(this).attr('name')];
+            //toggle off
+        } else {
+            reportsToDelete[$(this).attr('name')]=$(this).attr('name');
+        };
+    });
 }
 
-let createToggleCounter=()=>{
-    $(".custom-control-input").click( function(){
-        if( $(this).is(':checked') ){
-            if(toggleCounter==5){
-               openToggleExceptionModal(); 
-            }else{
-                reports[$(this).attr('id')]=$(this).attr('id');
+let openToggleExceptionModal = () => {
+    // alert("too much");
+    addCoinsToModal();
+    $('#reportsModal').modal('show');
+}
+
+let createToggleCounter = () => {
+    $(".custom-control-input").click(function () {
+        if ($(this).is(':checked')) {
+            if (toggleCounter == 5) {
+                $(this).prop("checked", false);
+                sixthCoin=$(this).attr('id');
+                sixthCoinID=$(this).attr('name');
+                openToggleExceptionModal();
+            } else {
+                reports[$(this).attr('id')] = $(this).attr('realID');
                 toggleCounter++;
             }
             //toggle off
-        }else{
+        } else {
             delete reports[$(this).attr('id')];
             toggleCounter--;
         };
-     });
+    });
 }
 
 function showMoreInfo(id, i) {
@@ -79,9 +115,9 @@ function showMoreInfo(id, i) {
 function getInfoAboutCoin(url, id, i) {
     //Check If the current Coin existing in the localStorage 
     if (JSON.parse(localStorage.getItem(`${id}`))) {
-      console.log("the coin exist in cache");
-       createMoreinfoHtml(JSON.parse(localStorage.getItem(`${id}`)),i);
-        
+        console.log("the coin exist in cache");
+        createMoreinfoHtml(JSON.parse(localStorage.getItem(`${id}`)), i);
+
 
     } else {
         console.log("the coin doesnt exist in cache");
@@ -92,12 +128,12 @@ function getInfoAboutCoin(url, id, i) {
             url: url,
             success: function (data) {
                 moreInfo[id] = data;
-                createMoreinfoHtml(moreInfo[id],i)
+                createMoreinfoHtml(moreInfo[id], i)
                 // set coin to localStorage
                 localStorage.setItem(`${id}`, JSON.stringify(moreInfo[id]));
                 //After 2 minutes remove the coin from the localStorage
-               setTimeout(function () { localStorage.removeItem(`${id}`); }, 10000);
-               console.log("getItem:", JSON.parse(localStorage.getItem(`${id}`)));
+                setTimeout(function () { localStorage.removeItem(`${id}`); }, 10000);
+                console.log("getItem:", JSON.parse(localStorage.getItem(`${id}`)));
 
             },
             error: function (error) {
@@ -108,25 +144,25 @@ function getInfoAboutCoin(url, id, i) {
 }
 
 //Function That Shows more info in Html.
-function createMoreinfoHtml(x,i){
-                let coinInfo = '';
-                coinInfo += `<div class='row'>`;
-                coinInfo += `<div class='col-md-6'>`;
-                coinInfo += `<img src="${x.image.small}">`;
-                coinInfo += `</div>`;
-                coinInfo += `<div class='col-md-6'>`;
-                coinInfo += `<div>${x.market_data.current_price.usd}$</div>`;
-                coinInfo += `<div>${x.market_data.current_price.eur}€</div>`;
-                coinInfo += `<div>${x.market_data.current_price.ils}&#8362</div>`;
-                coinInfo += `</div>`;
-                coinInfo += `</div>`;
-                $(`#collapse${i}`).html(coinInfo);
+function createMoreinfoHtml(x, i) {
+    let coinInfo = '';
+    coinInfo += `<div class='row'>`;
+    coinInfo += `<div class='col-md-6'>`;
+    coinInfo += `<img src="${x.image.small}">`;
+    coinInfo += `</div>`;
+    coinInfo += `<div class='col-md-6'>`;
+    coinInfo += `<div>${x.market_data.current_price.usd}$</div>`;
+    coinInfo += `<div>${x.market_data.current_price.eur}€</div>`;
+    coinInfo += `<div>${x.market_data.current_price.ils}&#8362</div>`;
+    coinInfo += `</div>`;
+    coinInfo += `</div>`;
+    $(`#collapse${i}`).html(coinInfo);
 }
 
 //Search Coin By Symbol -(ATC, BTC...])
 function searchCoins() {
     var textToSearch = document.querySelector("#search-country-by-name").value;
-    result = coins.filter(({ symbol }) => symbol===(`${textToSearch}`));
+    result = coins.filter(({ symbol }) => symbol === (`${textToSearch}`));
     showAllCoins(result);
 }
 
@@ -165,8 +201,8 @@ function createSingleCoin(arr) {      //  \'' + result.name + '\'
     coinsHtml += `<div class='row'>`;
     coinsHtml += `<h5 class='col-md-6'>${arr[i].symbol}</h5>`;
     coinsHtml += `<div class="custom-control custom-switch col-md-6">`
-    coinsHtml += `<input type="checkbox" value="false" class="custom-control-input" id="customSwitch${i}" >`;
-    coinsHtml += `<label class="custom-control-label" for="customSwitch${i}"></label>`;
+    coinsHtml += `<input type="checkbox" value="false" class="custom-control-input " id="${arr[i].symbol}" realID="${arr[i].id}" >`;
+    coinsHtml += `<label class="custom-control-label" for="${arr[i].symbol}"></label>`;
     coinsHtml += `</div>`;
     coinsHtml += `</div>`;
     coinsHtml += `<p class="card-text">${arr[i].name}</p>`;
@@ -180,9 +216,9 @@ function createSingleCoin(arr) {      //  \'' + result.name + '\'
     coinsHtml += `</div>`;
 
 }
-   
 
-   
+
+
 
 
 /**About Page */
@@ -194,6 +230,27 @@ $('#about-tab').on('click', function (e) {
     $(this).tab('show')
     coinsHtml += '<div> Hello World</div>';
     $("#main-div").html(coinsHtml);
+});
+
+$('#saveCoinsFromModal').on('click', function (e) {
+    e.preventDefault();
+    Object.keys(reportsToDelete).map((coinToUnToggle)=>{
+        $(`#${coinToUnToggle}`).prop("checked", false);
+        delete reports[coinToUnToggle];
+        toggleCounter--;
+        });
+
+        if(Object.keys(reportsToDelete).length>0){
+            reports[sixthCoin]=sixthCoinID;
+            $(`#${sixthCoin}`).prop("checked", true);
+            toggleCounter++;
+        }
+
+    $('#reportsModal').modal('toggle');
+    sixthCoin="";
+
+    reportsToDelete={};
 })
+
 
 
