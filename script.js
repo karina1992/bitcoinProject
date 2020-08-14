@@ -255,9 +255,11 @@ $("#reports-tab").on("click", function (e) {
     coinsHtml += `<div id="chartContainer" style="height: 370px; width: 100%;"></div>`;
     $("#main-div").html(coinsHtml);
     drawGraph(reportCoins);
-    graphInterval = setInterval(() => {
-        getMultiPricesFromAPI();
-    }, 2000)
+    if(Object.keys(reports).length>0){
+        graphInterval = setInterval(() => {
+            getMultiPricesFromAPI();
+        }, 2000)
+    }
 });
 
 
@@ -306,7 +308,7 @@ function drawGraph(reportCoins) {
         canvasData.push(
             {
                 type: "spline",
-                name: "Units Sold",
+                name: coin.toUpperCase(),
                 showInLegend: true,
                 // xValueFormatString: "mm-ss",
                 xValueType: "dateTime",
