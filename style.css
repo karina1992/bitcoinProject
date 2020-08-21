@@ -20,6 +20,7 @@
     justify-content: right;
     width: 50%;
     height: 50%;
+    padding-top: 10px;
 }
 
 .second-row{
@@ -44,7 +45,7 @@ margin-top: 10px;
 }
 
 .aboutpage{
-    margin-top: 150px;
+    margin-top: 100px;
     
 }
 
@@ -68,3 +69,4 @@ margin-top: 10px;
         width: 25%;
     }
 }
+

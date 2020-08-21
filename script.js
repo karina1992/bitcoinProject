@@ -72,7 +72,7 @@ function getCoinsFromAPI(url) {
             // console.log(data);
             showAllCoins(coins);
             createToggleCounter();
-            for(let coin in reports){
+            for (let coin in reports) {
                 $(`#${coin}`).prop("checked", true);
             }
         },
@@ -165,7 +165,7 @@ function getInfoAboutCoin(url, id, i) {
                 //After 2 minutes remove the coin from the localStorage
                 setTimeout(function () {
                     localStorage.removeItem(`${id}`);
-                }, 2*60*1000);
+                }, 2 * 60 * 1000);
                 console.log("getItem:", JSON.parse(localStorage.getItem(`${id}`)));
             },
             error: function (error) {
@@ -302,7 +302,7 @@ $("#reports-tab").on("click", function (e) {
     coinsHtml += `<div id="chartContainer" style="height: 370px; width: 100%;"></div>`;
     $("#main-div").html(coinsHtml);
     drawGraph(reportCoins);
-    if(Object.keys(reports).length>0){
+    if (Object.keys(reports).length > 0) {
         graphInterval = setInterval(() => {
             getMultiPricesFromAPI();
         }, 2000)
@@ -416,7 +416,7 @@ let clearGraph = () => {
     if (graphInterval) {
         clearInterval(graphInterval);
     }
-    coinsXPoints={};
+    coinsXPoints = {};
     canvasData = [];
 }
 
@@ -436,25 +436,24 @@ $("#about-tab").on("click", function (e) {
 
     coinsHtml += `<div class="mb-3" style="max-width: 1500px;">
     <div class="row no-gutters justify-content-md-center">
-      <div class="col-md-5">
+    <div class="col-md-2"></div>
+      <div class="col-md-4">
         <img src="karina.png" class="card-img" alt="...">
       </div>
-      <div class="col-md-5 aboutpage">
+      <div class="col-md-4 aboutpage">
         <div class="card-body ">
           <h5 class="card-title">About Me</h5>
           <p class="card-text">Junior FullStack Developer From Haifa,Israel.</p>
-        </div>
-        <div class="col-md-7 ">
-        <div class="card-body">
           <h5 class="card-title">About Project</h5>
           <p class="card-text">This Project as part of a FullStack course, The final of The part About JS,JQuery,AJAX.</p>
           <p class="card-text">Displays information About currencies and their Value from external sources.</p>
           <p class="card-text">The project also presents real-time reports on currency prices in dollars.</p>
         </div>
+        
       </div>
     </div>
   </div>`
-    coinsHtml +="</div>"
+    coinsHtml += "</div>"
     $("#main-div").html(coinsHtml);
 });
 
