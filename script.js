@@ -1,9 +1,20 @@
-/**OnLoad Function */
+
+
+////////////////////////////////////////////////
+////////////**OnLoad Function *////////////////
+/////////////Shows All TheCoins////////////////
+
 window.addEventListener("load", (event) => {
     getCoinsFromAPI(Baseurl);
 });
 
-/**Variables Declaration */
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+///////////////**Variables Declaration For All The Project *////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+
 //the coins
 var coins = [];
 //filter Result -> Array for Search.
@@ -34,15 +45,22 @@ let canvasData = [];
 let coinsXPoints = {};
 
 let graphInterval;
+//////////////////////////////////////////////////
+//////////////////**Url's *//////////////////////
+////////////////////////////////////////////////
 
-/**Url's */
+//List Of All Coins - First API
 Baseurl = "https://api.coingecko.com/api/v3/coins/list";
 
+//More Info About Coins - Second API
 infoUrl = "https://api.coingecko.com/api/v3/coins/";
 
-/**Functions */
+//////////////////////////////////////////////////
+/////////////////**Functions *////////////////////
+//////////////////////////////////////////////////
 
-//Get The Coins From API
+
+//Get All Coins From API Using The Baseurl 
 function getCoinsFromAPI(url) {
     $.ajax({
         type: "GET",
@@ -64,6 +82,7 @@ function getCoinsFromAPI(url) {
     });
 }
 
+//This function Create the Modal with 5 coins that were selected on homepage and prints them on HTML. 
 let addCoinsToModal = () => {
     let coinsIDArray = Object.keys(reports);
     coinsListHTML = "";
@@ -89,12 +108,14 @@ let addCoinsToModal = () => {
     });
 };
 
+//Open The Modal when array Of Reports > 5 (=6)
 let openToggleExceptionModal = () => {
     // alert("too much");
     addCoinsToModal();
     $("#reportsModal").modal("show");
 };
 
+//Count the number of coins in the array Of Reports.
 let createToggleCounter = () => {
     $(".custom-control-input").click(function () {
         if ($(this).is(":checked")) {
@@ -115,11 +136,14 @@ let createToggleCounter = () => {
     });
 };
 
+// The additional information about the selected coin from the second API.
 function showMoreInfo(id, i) {
     var infUrl = infoUrl + id;
     console.log(infUrl);
     getInfoAboutCoin(infUrl, id, i);
 }
+
+//Brings more information and saves it in localStorage for 2 Minutes.
 
 function getInfoAboutCoin(url, id, i) {
     //Check If the current Coin existing in the localStorage
@@ -141,7 +165,7 @@ function getInfoAboutCoin(url, id, i) {
                 //After 2 minutes remove the coin from the localStorage
                 setTimeout(function () {
                     localStorage.removeItem(`${id}`);
-                }, 10000);
+                }, 2*60*1000);
                 console.log("getItem:", JSON.parse(localStorage.getItem(`${id}`)));
             },
             error: function (error) {
@@ -167,11 +191,12 @@ function createMoreinfoHtml(x, i) {
     $(`#collapse${i}`).html(coinInfo);
 }
 
-//Search Coin By Symbol -(ATC, BTC...])
+//Search Coin By Symbol -(ATC, BTC...) Shows Only Full  Symbol name search 
 function searchCoins() {
     var textToSearch = document.querySelector("#search-country-by-name").value;
     result = coins.filter(({ symbol }) => symbol === `${textToSearch}`);
-    showAllCoins(result);
+    showAllCoinsSearch(result);
+    console.log(result)
 }
 
 //Show Home Page
@@ -186,6 +211,7 @@ $("#home-tab").on("click", function (e) {
 function showAllCoins(arr2) {
     coinsHtml = "";
     coinsHtml += `<div class='row'>`;
+    //Shows Only 100 Coins 
     for (i = 1003; i < arr2.length; i++) {
         if (i < 1103) {
             createSingleCoin(arr2);
@@ -198,11 +224,28 @@ function showAllCoins(arr2) {
     $("#main-div").html(coinsHtml);
 }
 
+function showAllCoinsSearch(arr2) {
+    coinsHtml = "";
+    coinsHtml += `<div class='row'>`;
+    for (i = 0; i < arr2.length; i++) {
+        if (i < arr2.length) {
+            createSingleCoin(arr2);
+        } else {
+            break;
+        }
+    }
+    coinsHtml += `</div>`;
+
+    $("#main-div").html(coinsHtml);
+}
+
+
+
+
 //Create Single Coin
 function createSingleCoin(arr) {
-    //  \'' + result.name + '\'
-
-    coinsHtml += `<div class='col-md-3 singleCard'>`;
+    console.log(arr)
+    coinsHtml += `<div class='column-2 px-2 mb-r singleCard'>`;
     coinsHtml += `<div class="card">`;
     coinsHtml += `<div class="card-body">`;
     coinsHtml += `<div class='row'>`;
@@ -244,9 +287,13 @@ $("#saveCoinsFromModal").on("click", function (e) {
 });
 
 
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+/////////////////////**Report Page *////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 
 //Show Charts Page
-
 $("#reports-tab").on("click", function (e) {
     console.log(reportCoins);
     coinsHtml = "";
@@ -264,8 +311,7 @@ $("#reports-tab").on("click", function (e) {
 
 
 
-//var coinsSymbolArray = [];
-
+//Get The Prices For multiple currencies - Third API
 function getMultiPricesFromAPI() {
     //get symbol from all reports.
     coinsSymbolArray = Object.keys(reports);
@@ -296,6 +342,7 @@ function getMultiPricesFromAPI() {
     });
 }
 
+//Draws a graph using the Array of reports from the Home page.
 function drawGraph(reportCoins) {
     //console.log(reportCoins);
     clearGraph();
@@ -364,7 +411,7 @@ function drawGraph(reportCoins) {
     }
 }
 
-
+//This function clear the Graph
 let clearGraph = () => {
     if (graphInterval) {
         clearInterval(graphInterval);
@@ -374,7 +421,11 @@ let clearGraph = () => {
 }
 
 
-/**About Page */
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+/////////////////////**About Page *////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 
 //Show About Page
 $("#about-tab").on("click", function (e) {
@@ -382,7 +433,28 @@ $("#about-tab").on("click", function (e) {
     coinsHtml = "";
     e.preventDefault();
     $(this).tab("show");
-    coinsHtml += "<div> Hello World</div>";
+
+    coinsHtml += `<div class="mb-3" style="max-width: 1500px;">
+    <div class="row no-gutters justify-content-md-center">
+      <div class="col-md-5">
+        <img src="karina.png" class="card-img" alt="...">
+      </div>
+      <div class="col-md-5 aboutpage">
+        <div class="card-body ">
+          <h5 class="card-title">About Me</h5>
+          <p class="card-text">Junior FullStack Developer From Haifa,Israel.</p>
+        </div>
+        <div class="col-md-7 ">
+        <div class="card-body">
+          <h5 class="card-title">About Project</h5>
+          <p class="card-text">This Project as part of a FullStack course, The final of The part About JS,JQuery,AJAX.</p>
+          <p class="card-text">Displays information About currencies and their Value from external sources.</p>
+          <p class="card-text">The project also presents real-time reports on currency prices in dollars.</p>
+        </div>
+      </div>
+    </div>
+  </div>`
+    coinsHtml +="</div>"
     $("#main-div").html(coinsHtml);
 });
 
